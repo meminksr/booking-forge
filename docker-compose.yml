@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  bookingforge-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bookingforge-mssql-container
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD='BookingForge2026!'
+
+  bookingforge-app:
+    build: .
+    container_name: bookingforge-api-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - bookingforge-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:sqlserver://bookingforge-db:1433;databaseName=master;encrypt=true;trustServerCertificate=true;
+      - SPRING_DATASOURCE_USERNAME=DB_USERNAME
+      - SPRING_DATASOURCE_PASSWORD='BookingForge2026!'

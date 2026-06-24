@@ -10,10 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/availabilities")
 @RequiredArgsConstructor
-@Tag(name = "Müsaitlik Yönetimi", description = "Hizmet sağlayıcıların çalışma saatlerini (slotlarını) belirleme uç noktaları")  //tırnak içindeki yazılar, Swagger arayüzünün (web sayfasının) vitrin yazılarıdır.
+@Tag(name = "Müsaitlik Yönetimi", description = "Hizmet sağlayıcıların çalışma saatlerini (slotlarını) belirleme uç noktaları")
 public class AvailabilityController {
 
     private final AvailabilityService availabilityService;
@@ -29,5 +31,10 @@ public class AvailabilityController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Sistemsel bir hata oluştu.");
         }
+    }
+    // Endpoint: /api/v1/availabilities/provider/{providerId}
+    @GetMapping("/provider/{providerId}")
+    public ResponseEntity<List<Availability>> getAvailabilitiesByProviderId(@PathVariable Long providerId) {
+        return ResponseEntity.ok(availabilityService.getAvailabilitiesByProviderId(providerId));
     }
 }

@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AvailabilityService {
@@ -34,5 +36,8 @@ public class AvailabilityService {
         availability.setEndTime(request.endTime());
 
         return availabilityRepository.save(availability);
+    }
+    public List<Availability> getAvailabilitiesByProviderId(Long providerId) {
+        return availabilityRepository.findByProviderId(providerId);
     }
 }
