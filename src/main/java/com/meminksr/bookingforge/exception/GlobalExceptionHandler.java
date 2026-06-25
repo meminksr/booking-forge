@@ -4,6 +4,7 @@ import com.meminksr.bookingforge.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -37,8 +38,8 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(Exception ex) {
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 ZonedDateTime.now(),
                 HttpStatus.FORBIDDEN.value(),
