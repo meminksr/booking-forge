@@ -1,86 +1,211 @@
-# BookingForge API
+<div align="center">
 
-[![CI Pipeline](https://github.com/meminksr/booking-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/meminksr/booking-forge/actions/workflows/ci.yml) ![Java](https://img.shields.io/badge/Java-25-orange.svg) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0-brightgreen.svg) ![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg) ![MSSQL](https://img.shields.io/badge/Database-MSSQL-red.svg)
+#  BookingForge
 
-**BookingForge** is an enterprise-grade, containerized REST API architected for scalable appointment scheduling and
-provider availability management. Built with **Spring Boot** and secured by **JWT**, it ensures data integrity through
-sophisticated relational database mapping and optimistic locking mechanisms.
+**A modern appointment booking REST API built with Spring Boot 4**
 
----
+[![Java](https://img.shields.io/badge/Java-25-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/en-us/sql-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-## System Architecture & Features
-
-The API is designed to handle complex business logic for service-based platforms, ensuring secure and conflict-free
-bookings.
-
-* **🔒 Stateless Security (JWT):** Robust authentication and endpoint authorization using Spring Security. Role-based
-  access control restricts sensitive operations.
-* **🛡️ Concurrency Control:** Implemented `@Version` (Optimistic Locking) via Hibernate to eliminate race conditions and
-  prevent double-booking of availability slots.
-* **🗄️ Advanced Data Modeling:** Highly normalized **Microsoft SQL Server** schema with perfectly mapped one-to-many and
-  many-to-one JPA relationships between Providers, Availabilities, and Appointments.
-* **🐳 Fully Containerized:** Infrastructure as Code (IaC) approach. The entire ecosystem (Application + MSSQL Database)
-  is orchestrated via Docker Compose for zero-configuration deployments.
-* **✅ Input Validation & Exception Handling:** Comprehensive Global Exception Handler to return clean, standardized HTTP
-  responses (RFC 7807) and prevent database null-constraint violations.
+</div>
 
 ---
 
-## Technology Stack
+##  Overview
 
-| Category              | Technology                                               |
-|:----------------------|:---------------------------------------------------------|
-| **Core Framework**    | Java 17, Spring Boot 3, Spring Web                       |
-| **Security**          | Spring Security, JSON Web Tokens (JWT)                   |
-| **Database & ORM**    | Microsoft SQL Server (MSSQL), Spring Data JPA, Hibernate |
-| **DevOps & Tools**    | Docker, Docker Compose, Maven, Lombok                    |
-| **API Documentation** | OpenAPI 3.0 (Swagger UI)                                 |
+**BookingForge** is a RESTful appointment booking API that allows service providers to define their availability slots and enables clients to book appointments within those time windows. The system includes conflict detection, working hours validation, and JWT-based authentication.
+
+### Key Features
+
+- 🔐 **JWT Authentication** — Secure user registration and login with Bearer token authorization
+- 👤 **Provider Management** — Create and manage service providers
+- 📅 **Availability Slots** — Providers can define their working hours
+- 📌 **Appointment Booking** — Clients can book appointments with automatic conflict detection
+- ⏱️ **Overlap Prevention** — Ensures no double-booking through time-slot validation
+- 📖 **Swagger / OpenAPI** — Interactive API documentation out of the box
+- 🐳 **Docker Ready** — Fully containerized with Docker Compose
 
 ---
 
-## Local Environment Setup
+##  Architecture
 
-BookingForge is built to be run instantly on any machine with Docker installed, eliminating the "it works on my machine"
-problem.
+```
+Controller → Security (JWT Filter) → Service → Repository → Database
+```
+
+| Layer | Responsibility |
+|-------|---------------|
+| **Controller** | REST endpoints, request/response handling |
+| **Security** | JWT token generation, validation, and authorization |
+| **Service** | Business logic, validation rules |
+| **Repository** | Data access via Spring Data JPA |
+| **Database** | SQL Server (production) / H2 (tests) |
+
+---
+
+## 🔌 API Endpoints
+
+### Authentication (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/auth/register` | Register a new user |
+| `POST` | `/api/v1/auth/login` | Login and receive JWT token |
+
+### Providers (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/providers` | Create a new provider |
+| `GET` | `/api/v1/providers` | List all providers |
+| `GET` | `/api/v1/providers/{id}` | Get provider by ID |
+
+### Availability (🔒 Requires JWT)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/availabilities` | Add a new availability slot |
+| `GET` | `/api/v1/availabilities/provider/{providerId}` | Get provider's availability |
+
+### Appointments (Requires JWT)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/v1/appointments` | Book a new appointment |
+
+>  **Full interactive documentation** available at `/swagger-ui.html` when the application is running.
+
+---
+
+##  Getting Started
 
 ### Prerequisites
 
-* [Docker & Docker Compose](https://www.docker.com/)
+- **Java 25** or higher
+- **Docker & Docker Compose** (for database)
+- **Maven 3.9+** (or use the included wrapper)
 
-### Installation Steps
-
-1. **Clone the repository**
+### 1. Clone the Repository
 
 ```bash
-   git clone [https://github.com/meminksr/booking-forge.git](https://github.com/meminksr/booking-forge.git)
-   cd booking-forge
-   
-2. **Initialize the Dockerized Ecosystem**
-    This command pulls the MSSQL image, provisions the database, builds the Spring Boot application, and links them within an isolated network.
+git clone https://github.com/meminksr/bookingforge.git
+cd bookingforge
+```
+
+### 2. Start the Database
+
 ```bash
-    docker-compose up --build
-    ```
+docker compose up -d bookingforge-db
+```
 
-3. **Explore the Interactive API Docs**
-    Once the console outputs `Started BookingforgeApplication`, the Swagger UI will be available at:
-```text
-    http://localhost:8080/swagger-ui.html
-    ```
+### 3. Configure Environment Variables
 
+```bash
+export DB_URL="jdbc:sqlserver://localhost:1433;databaseName=master;encrypt=true;trustServerCertificate=true;"
+export DB_USERNAME="sa"
+export DB_PASSWORD="your_password_here"
+```
 
-##  API Reference
+### 4. Run the Application
 
-Here are the core endpoints provided by the BookingForge API. Authentication is required for protected routes via the
-`Authorization: Bearer <token>` header.
+```bash
+./mvnw spring-boot:run
+```
 
-| Method   | Endpoint                   | Description                   |  Auth  |
-|:---------|:---------------------------|:------------------------------|:------:|
-| **POST** | **/api/v1/auth/register**  | Register a new user           |   ❌    |
-| **POST** | **/api/v1/auth/login**     | Authenticate and obtain JWT   |   ❌    |
-| **POST** | **/api/v1/providers**      | Create a new service provider | 🔒 Yes |
-| **GET**  | **/api/v1/providers**      | Retrieve a list of providers  | 🔒 Yes |
-| **POST** | **/api/v1/availabilities** | Allocate working hours        | 🔒 Yes |
-| **POST** | **/api/v1/appointments**   | Secure a booking              | 🔒 Yes |
+The API will be available at `http://localhost:8080`
 
+### 5. Run with Docker Compose (Full Stack)
+
+```bash
+docker compose up --build
+```
+
+---
+
+## 🧪 Testing
+
+The project includes both **unit tests** and **integration tests**:
+
+| Test Type | Count | Description |
+|-----------|-------|-------------|
+| Unit Tests | 2 | Service layer tests with Mockito |
+| Integration Tests | 18 | Full API endpoint tests with H2 in-memory DB |
+
+### Run All Tests
+
+```bash
+./mvnw test
+```
+
+### Integration Test Strategy
+
+- **`@SpringBootTest`** — Boots the full Spring application context
+- **`MockMvc`** — Simulates HTTP requests without starting a server
+- **`H2 Database`** — In-memory database for isolated, repeatable tests
+- **`@Transactional`** — Automatic rollback after each test
+- **Real JWT tokens** — Protected endpoints are tested with actual JWT authentication flow
+
+### Test Coverage
+
+| Controller | Tests | Scenarios Covered |
+|------------|-------|-------------------|
+| `AuthController` | 4 | Register, login, wrong password, non-existent user |
+| `ProviderController` | 4 | Create, list all, get by ID, not found |
+| `AvailabilityController` | 5 | Add slot, unauthorized access, invalid time, non-existent provider, list by provider |
+| `AppointmentController` | 5 | Book appointment, unauthorized, provider not found, outside hours, overlap detection |
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── main/
+│   ├── java/com/meminksr/bookingforge/
+│   │   ├── config/             # Security, JWT filter, OpenAPI, data initializer
+│   │   ├── controller/         # REST controllers
+│   │   ├── domain/             # JPA entities (User, Provider, Appointment, Availability)
+│   │   ├── dto/                # Request/Response DTOs
+│   │   ├── exception/          # Global exception handler
+│   │   ├── repository/         # Spring Data JPA repositories
+│   │   ├── security/           # JWT service
+│   │   └── service/            # Business logic
+│   └── resources/
+│       └── application.properties
+├── test/
+│   ├── java/com/meminksr/bookingforge/
+│   │   ├── controller/         # Integration tests
+│   │   └── service/            # Unit tests
+│   └── resources/
+│       └── application-test.properties
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| Java 25 | Programming language |
+| Spring Boot 4.1 | Application framework |
+| Spring Security | Authentication & authorization |
+| Spring Data JPA | Data access layer |
+| JWT (jjwt 0.12.5) | Token-based authentication |
+| SQL Server 2022 | Production database |
+| H2 | Test database |
+| Lombok | Boilerplate reduction |
+| SpringDoc OpenAPI | API documentation |
+| Docker | Containerization |
+| JUnit 5 + MockMvc | Testing framework |
+
+---
+
+##  License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+---
 
 

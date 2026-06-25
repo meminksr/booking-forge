@@ -19,21 +19,18 @@ public class ProviderController {
     private final ProviderService providerService;
 
     @PostMapping
-    public Provider createProvider(@RequestBody Provider provider) {
-        return providerRepository.save(provider);
+    public ResponseEntity<Provider> createProvider(@RequestBody Provider provider) {
+        return ResponseEntity.status(201).body(providerService.save(provider));
     }
 
     @GetMapping
-    public List<Provider> getAllProviders() {
-        return providerRepository.findAll();
+    public ResponseEntity<List<Provider>> getAllProviders() {
+        return ResponseEntity.ok(providerService.getAllProviders());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Provider> getProviderById(@PathVariable Long id) {
-        // providerService üzerinden o ID'yi arıyoruz.
-        // Bulamazsa yazdığımız ResourceNotFoundException fırlayacak!
-        Provider provider = providerService.getProviderById(id);
-        return ResponseEntity.ok(provider);
+        return ResponseEntity.ok(providerService.getProviderById(id));
     }
 
 
