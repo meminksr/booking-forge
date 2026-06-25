@@ -1,6 +1,5 @@
 package com.meminksr.bookingforge.exception;
 
-
 import com.meminksr.bookingforge.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,8 +8,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.ZonedDateTime;
 
-@RestControllerAdvice(basePackages = "com.mehmetkeser.bookingforge")
+@RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotFoundException(ResourceNotFoundException ex) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                ZonedDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found - Kayıt Bulunamadı",
+                ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
 
     @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
     public ResponseEntity<ApiErrorResponse> handleBusinessExceptions(RuntimeException ex) {
@@ -23,11 +35,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    // Beklenmeyen sistemsel çöküşleri yakalamak için genel bir exception handler ekliyor.
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleGeneralExceptions(Exception ex) {
-        ex.printStackTrace();
-
+        ex.printStackTrace(); // Arka planda logları görmek için
         ApiErrorResponse errorResponse = new ApiErrorResponse(
                 ZonedDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

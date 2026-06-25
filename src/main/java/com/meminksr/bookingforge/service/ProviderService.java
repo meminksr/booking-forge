@@ -17,4 +17,10 @@ public class ProviderService {
     public List<Provider> findAll() {
         return providerRepository.findAll();
     }
+
+    public Provider getProviderById(Long id) {
+        return providerRepository.findById(id)
+                .orElseThrow(() -> new com.meminksr.bookingforge.exception.ResourceNotFoundException("Belirtilen ID ile eşleşen sağlayıcı bulunamadı: " + id));
+    }
 }
+
