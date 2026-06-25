@@ -18,12 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * AuthController Entegrasyon Testleri
- *
- * Tüm zinciri test eder: Controller → Security → Service → Repository → H2 DB
- * Auth endpoint'leri herkese açıktır (permitAll), JWT gerekmez.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -37,7 +31,7 @@ class AuthControllerIntegrationTest {
             .registerModule(new JavaTimeModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    // ==================== REGISTER TESTLERİ ====================
+    //  REGISTER TESTLERİ
 
     @Test
     void register_WithValidData_ShouldReturnTokenAnd200() throws Exception {
@@ -53,7 +47,7 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.token").isNotEmpty());
     }
 
-    // ==================== LOGIN TESTLERİ ====================
+    //  LOGIN TESTLERİ
 
     @Test
     void login_WithValidCredentials_ShouldReturnTokenAnd200() throws Exception {

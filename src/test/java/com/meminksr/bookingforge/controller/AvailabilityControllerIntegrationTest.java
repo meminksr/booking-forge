@@ -24,12 +24,7 @@ import java.time.ZonedDateTime;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * AvailabilityController Entegrasyon Testleri
- *
- * Tüm zinciri test eder: Controller → Security (JWT) → Service → Repository → H2 DB
- * Availability endpoint'leri korumalıdır, JWT token gerektirir.
- */
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -68,7 +63,7 @@ class AvailabilityControllerIntegrationTest {
         testProvider = providerRepository.save(testProvider);
     }
 
-    // ==================== POST /api/v1/availabilities ====================
+    //  POST /api/v1/availabilities
 
     @Test
     void addAvailability_WithAuth_ShouldReturn201() throws Exception {
@@ -137,7 +132,7 @@ class AvailabilityControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // ==================== GET /api/v1/availabilities/provider/{providerId} ====================
+    // GET /api/v1/availabilities/provider/{providerId}
 
     @Test
     void getByProviderId_WithAuth_ShouldReturnListAnd200() throws Exception {

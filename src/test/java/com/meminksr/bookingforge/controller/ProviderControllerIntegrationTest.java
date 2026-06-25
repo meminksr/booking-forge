@@ -17,12 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * ProviderController Entegrasyon Testleri
- *
- * Tüm zinciri test eder: Controller → Security → Service → Repository → H2 DB
- * Provider endpoint'leri herkese açıktır (permitAll), JWT gerekmez.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -39,7 +33,7 @@ class ProviderControllerIntegrationTest {
     @Autowired
     private ProviderRepository providerRepository;
 
-    // ==================== POST /api/v1/providers ====================
+    //  POST /api/v1/providers
 
     @Test
     void createProvider_WithValidData_ShouldReturn201() throws Exception {
@@ -56,7 +50,7 @@ class ProviderControllerIntegrationTest {
                 .andExpect(jsonPath("$.email").value("ayse@bookingforge.com"));
     }
 
-    // ==================== GET /api/v1/providers ====================
+    //  GET /api/v1/providers
 
     @Test
     void getAllProviders_WhenProvidersExist_ShouldReturnListAnd200() throws Exception {
@@ -72,7 +66,7 @@ class ProviderControllerIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)));
     }
 
-    // ==================== GET /api/v1/providers/{id} ====================
+    //  GET /api/v1/providers/{id}
 
     @Test
     void getProviderById_WhenExists_ShouldReturnProviderAnd200() throws Exception {

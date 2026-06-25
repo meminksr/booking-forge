@@ -26,16 +26,7 @@ import java.time.ZonedDateTime;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * AppointmentController Entegrasyon Testleri
- *
- * Tüm zinciri test eder: Controller → Security (JWT) → Service → Repository → H2 DB
- * Appointment endpoint'leri korumalıdır, JWT token gerektirir.
- *
- * İş kuralları:
- * 1. Sağlayıcı müsait olmalı (çalışma saatleri içinde)
- * 2. Seçilen zaman dilimi dolu olmamalı (çakışma kontrolü)
- */
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -78,7 +69,6 @@ class AppointmentControllerIntegrationTest {
         testProvider.setEmail("doctor-" + System.nanoTime() + "@bookingforge.com");
         testProvider = providerRepository.save(testProvider);
 
-        // Provider'a çalışma saati ekle: yarın 09:00 - 17:00
         workStart = ZonedDateTime.now().plusDays(1).withHour(9).withMinute(0).withSecond(0).withNano(0);
         workEnd = workStart.withHour(17);
 
