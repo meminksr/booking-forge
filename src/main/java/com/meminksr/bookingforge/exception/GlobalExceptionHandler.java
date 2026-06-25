@@ -3,6 +3,7 @@ package com.meminksr.bookingforge.exception;
 import com.meminksr.bookingforge.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -33,6 +34,18 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiErrorResponse errorResponse = new ApiErrorResponse(
+                ZonedDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                "Forbidden - Erişim Reddedildi",
+                "Bu işlemi gerçekleştirmek için yetkiniz bulunmamaktadır."
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
 

@@ -1,5 +1,6 @@
 package com.meminksr.bookingforge.service;
 
+import com.meminksr.bookingforge.domain.Role;
 import com.meminksr.bookingforge.domain.User;
 import com.meminksr.bookingforge.dto.AuthResponse;
 import com.meminksr.bookingforge.dto.LoginRequest;
@@ -22,13 +23,15 @@ public class AuthService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(Role.USER)
                 .build();
 
         userRepository.save(user);
+
         String jwtToken = jwtService.generateToken(user);
         return new AuthResponse(jwtToken);
     }
+
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı!"));
