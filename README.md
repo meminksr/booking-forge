@@ -52,8 +52,8 @@ problem.
 1. **Clone the repository**
 
 ```bash
-   git clone [https://github.com/meminksr/bookingforge.git](https://github.com/meminksr/bookingforge.git)
-   cd bookingforge
+   git clone [https://github.com/meminksr/booking-forge.git](https://github.com/meminksr/booking-forge.git)
+   cd booking-forge
    
 2. **Initialize the Dockerized Ecosystem**
     This command pulls the MSSQL image, provisions the database, builds the Spring Boot application, and links them within an isolated network.
