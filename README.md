@@ -1,7 +1,7 @@
 # BookingForge API
 
-![Java](https://img.shields.io/badge/Java-17-orange.svg) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0-brightgreen.svg) ![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg) ![MSSQL](https://img.shields.io/badge/Database-MSSQL-red.svg)
-
+![Java](https://img.shields.io/badge/Java-25-orange.svg) ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.0-brightgreen.svg) ![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg) ![MSSQL](https://img.shields.io/badge/Database-MSSQL-red.svg)
+[![CI Pipeline](https://github.com/meminksr/bookingforge/actions/workflows/ci.yml/badge.svg)](https://github.com/meminksr/bookingforge/actions/workflows/ci.yml) 
 **BookingForge** is an enterprise-grade, containerized REST API architected for scalable appointment scheduling and
 provider availability management. Built with **Spring Boot** and secured by **JWT**, it ensures data integrity through
 sophisticated relational database mapping and optimistic locking mechanisms.
