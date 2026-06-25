@@ -18,7 +18,6 @@ public class JwtService {
     // Gerçek projelerde bu şifre application.properties içine saklanır.
     private static final String SECRET_KEY = "booking-forge-api-super-secret-key-that-is-very-long";
 
-    // 1. Token içinden Kullanıcı Adını (Email) Çıkaran Metot
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
