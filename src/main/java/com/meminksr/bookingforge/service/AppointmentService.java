@@ -5,6 +5,7 @@ import com.meminksr.bookingforge.domain.AppointmentStatus;
 import com.meminksr.bookingforge.domain.Availability;
 import com.meminksr.bookingforge.domain.Provider;
 import com.meminksr.bookingforge.dto.AppointmentRequest;
+import com.meminksr.bookingforge.exception.ResourceNotFoundException;
 import com.meminksr.bookingforge.repository.AppointmentRepository;
 import com.meminksr.bookingforge.repository.AvailabilityRepository;
 import com.meminksr.bookingforge.repository.ProviderRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.ZonedDateTime;
 import java.util.List;
 
@@ -64,7 +66,25 @@ public class AppointmentService {
                 .findByProviderIdAndStartTimeBetween(providerId, reqStart.minusDays(1), reqEnd.plusDays(1));
 
         return existingAppointments.stream().anyMatch(existing ->
+                existing.getStatus() != AppointmentStatus.CANCELLED &&
                 reqStart.isBefore(existing.getEndTime()) && reqEnd.isAfter(existing.getStartTime())
         );
+    }
+    @Transactional
+    public Appointment cancelAppointment(Long appointmentId, String currentUserEmail) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Randevu bulunamadı!"));
+
+        if (!appointment.getClientEmail().equalsIgnoreCase(currentUserEmail)) {
+            throw new AccessDeniedException("Güvenlik İhlali: Sadece kendi randevularınızı iptal edebilirsiniz!");
+        }
+
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new IllegalStateException("Bu randevu zaten iptal edilmiş.");
+        }
+
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+
+        return appointmentRepository.save(appointment);
     }
 }
