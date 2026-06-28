@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.meminksr.bookingforge.domain.Provider;
 import com.meminksr.bookingforge.domain.Role;
+import com.meminksr.bookingforge.dto.ProviderRequest;
 import com.meminksr.bookingforge.dto.RegisterRequest;
 import com.meminksr.bookingforge.repository.ProviderRepository;
 import com.meminksr.bookingforge.service.AuthService;
@@ -21,13 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * ProviderController Entegrasyon Testleri (RBAC Güncellemesi)
- *
- * Artık Provider endpoint'leri rol bazlı yetkilendirme ile korunmaktadır:
- * - POST /api/v1/providers → Sadece ADMIN
- * - GET  /api/v1/providers → Authenticated (giriş yapmış herkes)
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -67,18 +61,15 @@ class ProviderControllerIntegrationTest {
         userToken = authService.register(userRequest).getToken();
     }
 
-    // ==================== POST /api/v1/providers ====================
 
     @Test
     void createProvider_WithAdminRole_ShouldReturn201() throws Exception {
-        Provider provider = new Provider();
-        provider.setName("Dr. Ayşe Yılmaz");
-        provider.setEmail("ayse@bookingforge.com");
+        ProviderRequest request = new ProviderRequest("Dr. Ayşe Yılmaz", "ayse@bookingforge.com");
 
         mockMvc.perform(post("/api/v1/providers")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(provider)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.name").value("Dr. Ayşe Yılmaz"))
@@ -87,30 +78,50 @@ class ProviderControllerIntegrationTest {
 
     @Test
     void createProvider_WithUserRole_ShouldReturn403() throws Exception {
-        Provider provider = new Provider();
-        provider.setName("Dr. Test");
-        provider.setEmail("test@bookingforge.com");
+        ProviderRequest request = new ProviderRequest("Dr. Test", "test@bookingforge.com");
 
         mockMvc.perform(post("/api/v1/providers")
                         .header("Authorization", "Bearer " + userToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(provider)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void createProvider_WithoutAuth_ShouldReturn403() throws Exception {
-        Provider provider = new Provider();
-        provider.setName("Dr. Hacker");
-        provider.setEmail("hacker@bookingforge.com");
+        ProviderRequest request = new ProviderRequest("Dr. Hacker", "hacker@bookingforge.com");
 
         mockMvc.perform(post("/api/v1/providers")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(provider)))
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
 
-    // ==================== GET /api/v1/providers ====================
+
+    @Test
+    void createProvider_WithBlankName_ShouldReturn400() throws Exception {
+        ProviderRequest request = new ProviderRequest("", "valid@bookingforge.com");
+
+        mockMvc.perform(post("/api/v1/providers")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.name").isNotEmpty());
+    }
+
+    @Test
+    void createProvider_WithInvalidEmail_ShouldReturn400() throws Exception {
+        ProviderRequest request = new ProviderRequest("Dr. Valid Name", "not-an-email");
+
+        mockMvc.perform(post("/api/v1/providers")
+                        .header("Authorization", "Bearer " + adminToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").isNotEmpty());
+    }
+
 
     @Test
     void getAllProviders_WithAuth_ShouldReturnListAnd200() throws Exception {
@@ -126,7 +137,6 @@ class ProviderControllerIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)));
     }
 
-    // ==================== GET /api/v1/providers/{id} ====================
 
     @Test
     void getProviderById_WithAuth_ShouldReturnProviderAnd200() throws Exception {

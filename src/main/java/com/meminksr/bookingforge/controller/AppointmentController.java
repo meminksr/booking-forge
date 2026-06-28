@@ -5,6 +5,7 @@ import com.meminksr.bookingforge.dto.AppointmentRequest;
 import com.meminksr.bookingforge.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AppointmentController {
 
     @PostMapping
     @Operation(summary = "Yeni Randevu Oluştur", description = "Müşterinin seçtiği saat diliminde çakışma yoksa randevuyu onaylar ve sisteme kaydeder.")
-    public ResponseEntity<Appointment> bookAppointment(@RequestBody AppointmentRequest request) {
+    public ResponseEntity<Appointment> bookAppointment(@Valid @RequestBody AppointmentRequest request) {
         Appointment savedAppointment = appointmentService.bookAppointment(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAppointment);
     }

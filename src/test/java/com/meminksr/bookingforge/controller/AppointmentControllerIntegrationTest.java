@@ -187,4 +187,43 @@ class AppointmentControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(overlappingRequest)))
                 .andExpect(status().isBadRequest());
     }
+
+    // ==================== VALIDATION TESTS ====================
+
+    @Test
+    void bookAppointment_WithInvalidEmail_ShouldReturn400() throws Exception {
+        AppointmentRequest request = new AppointmentRequest(
+                testProvider.getId(),
+                "Ahmet Yılmaz",
+                "invalid-email", // Geçersiz e-posta
+                workStart.plusHours(1),
+                workStart.plusHours(2)
+        );
+
+        mockMvc.perform(post("/api/v1/appointments")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.clientEmail").isNotEmpty());
+    }
+
+    @Test
+    void bookAppointment_WithPastTime_ShouldReturn400() throws Exception {
+        AppointmentRequest request = new AppointmentRequest(
+                testProvider.getId(),
+                "Ahmet Yılmaz",
+                "ahmet@gmail.com",
+                ZonedDateTime.now().minusDays(1), // Geçmiş zaman
+                ZonedDateTime.now().minusDays(1).plusHours(1)
+        );
+
+        mockMvc.perform(post("/api/v1/appointments")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.startTime").isNotEmpty())
+                .andExpect(jsonPath("$.fieldErrors.endTime").isNotEmpty());
+    }
 }

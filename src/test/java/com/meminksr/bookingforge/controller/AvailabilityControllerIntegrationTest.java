@@ -141,4 +141,38 @@ class AvailabilityControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
     }
+
+    // ==================== VALIDATION TESTS ====================
+
+    @Test
+    void addAvailability_WithPastTime_ShouldReturn400() throws Exception {
+        AvailabilityRequest request = new AvailabilityRequest(
+                testProvider.getId(),
+                ZonedDateTime.now().minusDays(1), // Geçmiş
+                ZonedDateTime.now().plusDays(1)
+        );
+
+        mockMvc.perform(post("/api/v1/availabilities")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.startTime").isNotEmpty());
+    }
+
+    @Test
+    void addAvailability_WithNullProvider_ShouldReturn400() throws Exception {
+        AvailabilityRequest request = new AvailabilityRequest(
+                null, // provider null
+                ZonedDateTime.now().plusDays(1),
+                ZonedDateTime.now().plusDays(2)
+        );
+
+        mockMvc.perform(post("/api/v1/availabilities")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.providerId").isNotEmpty());
+    }
 }

@@ -107,4 +107,47 @@ class AuthControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isInternalServerError());
     }
+
+    // ==================== VALIDATION TESTS ====================
+
+    @Test
+    void register_WithInvalidEmail_ShouldReturn400() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setEmail("not-an-email"); // Invalid email format
+        request.setPassword("securePassword123");
+        request.setRole(Role.USER);
+
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").isNotEmpty());
+    }
+
+    @Test
+    void register_WithShortPassword_ShouldReturn400() throws Exception {
+        RegisterRequest request = new RegisterRequest();
+        request.setEmail("valid@bookingforge.com");
+        request.setPassword("123"); // Too short (< 6)
+        request.setRole(Role.USER);
+
+        mockMvc.perform(post("/api/v1/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.password").isNotEmpty());
+    }
+
+    @Test
+    void login_WithBlankEmail_ShouldReturn400() throws Exception {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(""); // Blank email
+        loginRequest.setPassword("myPassword123");
+
+        mockMvc.perform(post("/api/v1/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.fieldErrors.email").isNotEmpty());
+    }
 }
