@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +25,8 @@ public class ProviderService {
         return providerRepository.findAll();
     }
 
-    public Provider getProviderById(Long id) {
+
+    public Provider getProviderById(UUID id) {
         return providerRepository.findById(id)
                 .orElseThrow(() -> new com.meminksr.bookingforge.exception.ResourceNotFoundException("Belirtilen ID ile eşleşen sağlayıcı bulunamadı: " + id));
     }

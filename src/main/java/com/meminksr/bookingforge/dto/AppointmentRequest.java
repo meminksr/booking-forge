@@ -3,10 +3,12 @@ package com.meminksr.bookingforge.dto;
 import jakarta.validation.constraints.*;
 import java.time.ZonedDateTime;
 
+import java.util.UUID;
+
 public record AppointmentRequest(
 
         @NotNull(message = "Sağlayıcı ID boş olamaz.")
-        Long providerId,
+        UUID providerId,
 
         @NotBlank(message = "Müşteri adı boş olamaz.")
         @Size(min = 2, max = 100, message = "Müşteri adı en az 2, en fazla 100 karakter olmalıdır.")

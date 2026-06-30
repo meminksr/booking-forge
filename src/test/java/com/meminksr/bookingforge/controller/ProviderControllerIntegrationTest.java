@@ -19,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -154,7 +156,7 @@ class ProviderControllerIntegrationTest {
 
     @Test
     void getProviderById_WhenNotFound_ShouldReturn404() throws Exception {
-        mockMvc.perform(get("/api/v1/providers/{id}", 99999L)
+        mockMvc.perform(get("/api/v1/providers/{id}", UUID.randomUUID())
                         .header("Authorization", "Bearer " + userToken))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))

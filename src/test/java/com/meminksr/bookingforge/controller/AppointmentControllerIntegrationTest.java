@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -123,7 +124,7 @@ class AppointmentControllerIntegrationTest {
     @Test
     void bookAppointment_ProviderNotFound_ShouldReturn400() throws Exception {
         AppointmentRequest request = new AppointmentRequest(
-                99999L,  // olmayan provider ID
+                UUID.randomUUID(),  // olmayan provider ID
                 "Zeynep Demir",
                 "zeynep@gmail.com",
                 workStart.plusHours(1),

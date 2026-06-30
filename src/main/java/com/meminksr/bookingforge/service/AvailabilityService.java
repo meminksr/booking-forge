@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +38,8 @@ public class AvailabilityService {
 
         return availabilityRepository.save(availability);
     }
-    public List<Availability> getAvailabilitiesByProviderId(Long providerId) {
+
+    public List<Availability> getAvailabilitiesByProviderId(UUID providerId) {
         return availabilityRepository.findByProviderId(providerId);
     }
 }

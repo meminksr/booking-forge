@@ -7,10 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, UUID> {
 
     // çakışma kontrolü
-    List<Appointment> findByProviderIdAndStartTimeBetween(Long providerId, ZonedDateTime start, ZonedDateTime end);
+    List<Appointment> findByProviderIdAndStartTimeBetween(UUID providerId, ZonedDateTime start, ZonedDateTime end);
 }

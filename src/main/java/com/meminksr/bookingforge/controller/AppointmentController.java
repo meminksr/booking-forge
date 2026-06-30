@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
 import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/appointments")
@@ -30,10 +31,11 @@ public class AppointmentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAppointment);
     }
 
+
     @PutMapping("/{id}/cancel")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Appointment> cancelAppointment(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             Principal principal
     ) throws AccessDeniedException {
         String currentUserEmail = principal.getName();

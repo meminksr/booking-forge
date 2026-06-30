@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import java.util.UUID;
+
 @Repository
-public interface AvailabilityRepository extends JpaRepository<Availability, Long> {
+public interface AvailabilityRepository extends JpaRepository<Availability, UUID> {
 
-    List<Availability> findByProviderIdAndStartTimeBetween(Long providerId, ZonedDateTime start, ZonedDateTime end);
+    List<Availability> findByProviderIdAndStartTimeBetween(UUID providerId, ZonedDateTime start, ZonedDateTime end);
 
-    List<Availability> findByProviderId(Long providerId);
+    List<Availability> findByProviderId(UUID providerId);
 }

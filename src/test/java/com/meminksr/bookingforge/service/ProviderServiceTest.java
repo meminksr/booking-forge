@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +27,7 @@ class ProviderServiceTest {
     @Test
     void getProviderById_WhenIdExists_ShouldReturnProvider() {
 
-        Long providerId = 1L;
+        UUID providerId = UUID.randomUUID();
         Provider mockProvider = new Provider();
 
         // Dublör veritabanımıza emir veriyoruz: "Eğer sana 1 ID'si gelirse, bu mockProvider'ı bulmuşsun gibi yap!"
@@ -43,7 +44,7 @@ class ProviderServiceTest {
     @Test
     void getProviderById_WhenIdDoesNotExist_ShouldThrowResourceNotFoundException() {
 
-        Long missingId = 1L;
+        UUID missingId = UUID.randomUUID();
 
         // Dublör veritabanına emir veriyoruz: "O ID bende yok de (Boş dön)."
         when(providerRepository.findById(missingId)).thenReturn(Optional.empty());

@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -80,7 +81,7 @@ class AvailabilityControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.provider.id").value(testProvider.getId()));
+                .andExpect(jsonPath("$.provider.id").value(testProvider.getId().toString()));
     }
 
     @Test
@@ -122,7 +123,7 @@ class AvailabilityControllerIntegrationTest {
         ZonedDateTime end = start.plusHours(8);
 
         AvailabilityRequest request = new AvailabilityRequest(
-                99999L, start, end
+                UUID.randomUUID(), start, end
         );
 
         mockMvc.perform(post("/api/v1/availabilities")

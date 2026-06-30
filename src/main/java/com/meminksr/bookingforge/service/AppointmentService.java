@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +53,7 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    private boolean checkAvailability(Long providerId, ZonedDateTime reqStart, ZonedDateTime reqEnd) {
+    private boolean checkAvailability(UUID providerId, ZonedDateTime reqStart, ZonedDateTime reqEnd) {
         List<Availability> availabilities = availabilityRepository.findByProviderId(providerId);
 
         return availabilities.stream().anyMatch(avail ->
@@ -61,7 +62,7 @@ public class AppointmentService {
         );
     }
 
-    private boolean checkOverlap(Long providerId, ZonedDateTime reqStart, ZonedDateTime reqEnd) {
+    private boolean checkOverlap(UUID providerId, ZonedDateTime reqStart, ZonedDateTime reqEnd) {
         List<Appointment> existingAppointments = appointmentRepository
                 .findByProviderIdAndStartTimeBetween(providerId, reqStart.minusDays(1), reqEnd.plusDays(1));
 
@@ -71,7 +72,7 @@ public class AppointmentService {
         );
     }
     @Transactional
-    public Appointment cancelAppointment(Long appointmentId, String currentUserEmail) {
+    public Appointment cancelAppointment(UUID appointmentId, String currentUserEmail) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Randevu bulunamadı!"));
 

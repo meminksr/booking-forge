@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/availabilities")
@@ -28,9 +29,10 @@ public class AvailabilityController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedAvailability);
     }
 
+
     // Endpoint: /api/v1/availabilities/provider/{providerId}
     @GetMapping("/provider/{providerId}")
-    public ResponseEntity<List<Availability>> getAvailabilitiesByProviderId(@PathVariable Long providerId) {
+    public ResponseEntity<List<Availability>> getAvailabilitiesByProviderId(@PathVariable UUID providerId) {
         return ResponseEntity.ok(availabilityService.getAvailabilitiesByProviderId(providerId));
     }
 }
